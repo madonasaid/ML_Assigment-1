@@ -1,0 +1,39 @@
+clc;close all ; clear;
+% Loading the dataset
+
+ dataSet = readtable('data2.csv');
+
+ dataSet = table2cell(dataSet);
+% data = load('data1.txt');
+ dataSet(:,8) = [];
+ dataSet(:,16) = [];
+
+x = dataSet(:, 4:19);
+x = cell2mat( x );
+y = dataSet(:, 3);
+y = cell2mat( y );
+
+normalization = true;
+
+if (normalization)
+    for i = 1:16
+        x(:, i) = (x(:, i) - max(x(:, i))) / (max(x(:, i)) - min(x(:, i)));
+    end
+    y = (y - max(y)) / (max(y) - min(y));
+end
+
+% Adding a column of ones to the beginning of the 'x' matrix
+x = [ones(length(x), 1) x];
+
+parameters = zeros(17, 1);
+learningRate = 0.01;
+repetition = 150;
+[parameters, costHistory] = gradient(x, y, parameters, learningRate, repetition);
+
+figure;
+plot(costHistory, 1:repetition);
+
+% Finally predicting the output of the provided inputs
+inputs = [1;30; 10;11800;56500;0;0;30;70;11800;0;19550;0;407.5;-122.2;13400;56500];
+output = parameters'* inputs;
+disp(output);
